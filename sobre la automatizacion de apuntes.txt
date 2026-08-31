@@ -1,0 +1,3 @@
+chatgpt: cuenta patricio
+ultimo chat no considerado
+aplicacion alojada en appscript
