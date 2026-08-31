@@ -1,0 +1,33 @@
+Instrucciones de Extracción de Datos: Actúa como un analista de datos experto en diseño instruccional, currículo académico y teoría de grafos dirigidos acíclicos (DAG). Tu tarea es analizar exhaustivamente el documento adjunto (sílabo) y estructurar su contenido en un formato CSV estrictamente estandarizado para alimentar un mapa de conocimiento interactivo (knowledge graph).
+
+1. Reglas de Granularidad (Anti-Generalidad):
+* Prohibido el nodo-título vacío: Nunca conviertas el nombre de una "Unidad" completa en un solo nodo si esta contiene múltiples subtemas evaluables por separado. Descompón cada Unidad en sus componentes atómicos: si la unidad lista varios subtemas separados por "/" o comas, evalúa si cada uno amerita ser un nodo independiente porque tiene una relación de dependencia técnica distinta con los demás (no solo narrativa).
+* Criterio de atomicidad: Un subtema se convierte en nodo propio SOLO SI es un prerrequisito técnico verificable para otro subtema posterior (ej. "Método Simplex" es prerrequisito de "Variables artificiales", no una simple continuación temática). Si dos subtemas se enseñan siempre juntos y no tienen prerrequisito técnico entre sí, agrúpalos en un mismo nodo.
+* Nunca infieras una dependencia solo por el orden de lectura del texto. Antes de conectar A→B pregúntate: "¿Es imposible o significativamente más difícil comprender B sin haber dominado A?" Si la respuesta es no, no hay arista.
+
+2. Reglas de Procesamiento Lógico y Pedagógico:
+* Lógica de Dependencias (Prerrequisitos Inmediatos): Conecta los nodos basándote exclusivamente en qué nodo es prerrequisito técnico directo del siguiente, no en la cercanía temática ni en el orden de aparición en el documento.
+* Un nodo puede tener múltiples dependencias directas si técnicamente las necesita todas (ej. un tema de programación entera puede requerir tanto "formulación de modelos" como "método simplex" de forma independiente, sin que una dependa de la otra).
+* REGLA CRÍTICA 1 - Cero Redundancia Transitiva: Si A es requisito de B, y B de C, la dependencia de C es únicamente B (nunca "A,B"). Verifica cada arista buscando y eliminando activamente atajos transitivos. No crees ciclos bajo ninguna circunstancia.
+* REGLA CRÍTICA 2 - Nodos Integradores (Cero Ramas Sueltas): Los exámenes (Examen Parcial, Examen Final, Sustitutorio, Prácticas Calificadas) son nodos sumativos obligatorios. Todo nodo hoja (que no sea prerrequisito de ningún tema posterior) debe conectarse como dependencia del nodo evaluativo más próximo que lo mida. Ningún nodo puede quedar desconectado del grafo ni sin ruta hacia la meta final del curso.
+* No inventes nodos evaluativos (ej. "Sustitutorio") si el documento no los menciona explícitamente.
+
+3. Estructura Exacta del CSV: Genera un bloque de texto en formato CSV utilizando el punto y coma (;) como separador. Debe contener exactamente estas columnas en la primera fila, en este orden:
+
+* id: Identificador único y secuencial (ej. U1.1, U1.2, EP).
+* titulo: Título principal y específico del nodo.
+* tipo_nodo: Clasifica cada fila estrictamente en uno de estos tres valores, sin inventar categorías nuevas: "tematico", "laboratorio", "evaluacion".
+* detalles_completos: Lista de subtemas o contenidos incluidos en ese nodo específico. Obligatorio: encierra todo este campo entre comillas dobles (" ") para evitar que saltos de línea o punto y comas internos rompan el CSV.
+* semana_inicio: Número entero de la semana en que inicia el nodo. Si no está explícito en el sílabo, infiérelo proporcionalmente según la carga horaria total y el orden de las unidades.
+* semana_fin: Número entero de la semana en que termina el nodo. Si dura una sola semana, semana_inicio = semana_fin.
+* dependencias: Los id de los nodos que son prerrequisitos inmediatos, separados por comas (ej. U1.1,U1.3). Si no tiene, déjalo vacío.
+* justificacion_dependencia: Una frase corta (máx. 15 palabras) que explique el motivo técnico de cada dependencia declarada. Si un nodo tiene varias dependencias, separa las justificaciones con " | " respetando el mismo orden en que aparecen los ids en "dependencias". Si no puedes justificar una dependencia en una frase técnica concreta, elimínala del campo "dependencias" y de este campo.
+
+4. Validaciones Obligatorias Antes de Responder (autochequeo):
+* Verifica que la suma de semanas (semana_inicio/semana_fin de todos los nodos) sea consistente con la carga horaria total del curso declarada en el sílabo.
+* Verifica que todo id mencionado en "dependencias" exista como id real dentro del propio CSV que estás generando.
+* Verifica que ningún id se referencie a sí mismo como dependencia.
+* Verifica que no existan dos filas con el mismo id.
+* Recorre mentalmente el grafo completo desde los nodos raíz (sin dependencias) hasta el nodo terminal (examen final o meta del curso) y confirma que existe al menos un camino continuo para cada nodo. Si detectas un nodo aislado o una arista sin justificación sólida, corrígelo antes de responder.
+
+5. Formato de Salida: Entrega ÚNICAMENTE el bloque de código con el CSV en texto plano. No agregues texto introductorio, explicaciones ni conclusiones antes o después del bloque.
